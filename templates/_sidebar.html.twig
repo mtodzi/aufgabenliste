@@ -1,0 +1,42 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; min-height: 100vh; border-right: 1px solid #dee2e6;">
+    <a href="{{ path('app_home') }}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+        <i class="bi bi-cpu-fill fs-4 me-2"></i>
+        <span class="fs-4">SaaS Platform</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{{ path('app_home') }}" class="nav-link {{ app.request.attributes.get('_route') == 'app_home' ? 'active' : 'link-dark' }}">
+                <i class="bi bi-house-door me-2"></i> Главная
+            </a>
+        </li>
+
+        {% if is_granted('ROLE_ORG_ADMIN') %}
+            <li class="mt-3 mb-1 text-muted small fw-bold text-uppercase">Управление организацией</li>
+            <li>
+                <a href="{{ path('app_admin_employee_index') }}" class="nav-link {{ app.request.attributes.get('_route') starts with 'app_admin_employee' ? 'active' : 'link-dark' }}">
+                    <i class="bi bi-people me-2"></i> Сотрудники
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_admin_role_index') }}" class="nav-link {{ app.request.attributes.get('_route') starts with 'app_admin_role' ? 'active' : 'link-dark' }}">
+                    <i class="bi bi-shield-lock me-2"></i> Роли
+                </a>
+            </li>
+        {% endif %}
+
+        {% if is_granted('ROLE_SYSTEM_ADMIN') %}
+            <li class="mt-3 mb-1 text-muted small fw-bold text-uppercase">Система</li>
+            <li>
+                <a href="{{ path('app_admin_organization_index') }}" class="nav-link {{ app.request.attributes.get('_route') starts with 'app_admin_organization' ? 'active' : 'link-dark' }}">
+                    <i class="bi bi-building me-2"></i> Организации
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+    <hr>
+    <div class="dropdown">
+        <span class="d-block text-muted small mb-1">Вы вошли как:</span>
+        <strong>{{ app.user.email }}</strong>
+    </div>
+</div>

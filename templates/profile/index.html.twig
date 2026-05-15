@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Настройки профиля{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="h3 mb-4 text-gray-800">Профиль пользователя</h1>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Основная информация</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 font-weight-bold">Email:</div>
+                        <div class="col-sm-8">{{ user.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 font-weight-bold">Полное имя:</div>
+                        <div class="col-sm-8">{{ user.fullName|default('Не указано') }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 font-weight-bold">Организация:</div>
+                        <div class="col-sm-8">
+                            {% if user.organization %}
+                                <span class="badge bg-primary">{{ user.organization.name }}</span>
+                            {% else %}
+                                <span class="text-muted">Системный уровень (без организации)</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 font-weight-bold">Статус:</div>
+                        <div class="col-sm-8">
+                            <span class="badge {{ user.isActive ? 'bg-success' : 'bg-danger' }}">
+                                {{ user.isActive ? 'Активен' : 'Заблокирован' }}
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 font-weight-bold">Ваши роли в системе:</div>
+                        <div class="col-sm-8">
+                            {% for role in user.userRoles %}
+                                <div class="mb-2">
+                                    <strong>{{ role.name }}</strong>
+                                    {% if role.permissions|length > 0 %}
+                                        <br><small class="text-muted">Разрешения: {{ role.permissions|map(p => p.name)|join(', ') }}</small>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">Базовая роль (ROLE_USER)</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    role_hierarchy:
+        ROLE_ORG_ADMIN:    ROLE_USER
+        ROLE_ADMIN:        ROLE_ORG_ADMIN
+        ROLE_SYSTEM_ADMIN: [ROLE_ORG_ADMIN, ROLE_ADMIN]
+        ROLE_SUPER_ADMIN:  [ROLE_SYSTEM_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    firewalls:
+        dev:
+            # Ensure dev tools and static assets are always allowed
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                # target: app_any_route
+
+            # Activate different ways to authenticate:
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Note: Only the *first* matching rule is applied
+    access_control:
+        # 1. Разрешаем всем доступ к странице входа
+        # (убедитесь, что путь совпадает с вашим route name или URL)
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+
+        # 2. Разрешаем всем доступ к регистрации
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+
+        # Разрешаем управление ролями организации
+        - { path: ^/admin/roles, roles: ROLE_ORG_ADMIN }
+
+        # Разрешаем ROLE_ADMIN (админы организаций) доступ к управлению сотрудниками
+        - { path: ^/admin/employees, roles: ROLE_ORG_ADMIN }
+
+        # 3. Доступ в админку только для системных администраторов
+        - { path: ^/admin, roles: ROLE_SYSTEM_ADMIN }
+
+        # 4. ЗАПРЕЩАЕМ всё остальное для анонимов.
+        # IS_AUTHENTICATED_REMEMBERED — значит пользователь вошел 
+        # (включая тех, кто зашел через "Remember Me")
+        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            # Password hashers are resource-intensive by design to ensure security.
+            # In tests, it's safe to reduce their cost to improve performance.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

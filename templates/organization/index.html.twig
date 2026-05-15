@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Администрирование организаций{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <h1 class="h3 mb-4">Организации</h1>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Дата создания</th>
+                        <th>Статус</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for org in organizations %}
+                    <tr>
+                        <td>{{ org.id }}</td>
+                        <td><strong>{{ org.name }}</strong></td>
+                        <td>{{ org.createdAt|date('d.m.Y H:i') }}</td>
+                        <td>
+                            <span class="badge {{ org.isActive ? 'bg-success' : 'bg-secondary' }}">
+                                {{ org.isActive ? 'Активна' : 'Неактивна' }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            {% if not org.isActive %}
+                                <form method="post" action="{{ path('app_admin_organization_activate', {id: org.id}) }}" style="display:inline;">
+                                    <button class="btn btn-sm btn-outline-success">Активировать</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{{ path('app_admin_organization_deactivate', {id: org.id}) }}" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите деактивировать эту организацию?');">
+                                    <button class="btn btn-sm btn-outline-danger">Деактивировать</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
