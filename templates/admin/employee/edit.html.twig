@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактировать сотрудника{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .phone-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .phone-item > div { flex-grow: 1; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Редактировать сотрудника</h1>
+                <a href="{{ path('app_admin_employee_index') }}" class="btn btn-outline-secondary">Назад к списку</a>
+            </div>
+
+            {% if not form.vars.valid %}
+                <div class="alert alert-danger shadow-sm">
+                    <h5 class="alert-heading">Пожалуйста, исправьте следующие ошибки:</h5>
+                    <ul class="mb-0">
+                        {% for error in form.vars.errors %}
+                            <li>{{ error.message }}</li>
+                        {% endfor %}
+                        {% for field in form.children %}
+                            {% for error in field.vars.errors %}
+                                <li><strong>{{ field.vars.label|default(field.vars.name) }}:</strong> {{ error.message }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'id': 'employee-form'}}) }}
+                        {{ form_row(form.fullName) }}
+                        {{ form_row(form.email) }}
+
+                        <div class="mb-3">
+                            <label class="form-label">Номера телефонов</label>
+                            <div id="phone-collection" 
+                                 data-prototype="{{ form_widget(form.phones.vars.prototype)|e('html_attr') }}"
+                                 data-index="{{ form.phones|length }}">
+                                {% for phone in form.phones %}
+                                    <div class="phone-item">
+                                        {{ form_widget(phone) }}
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-phone">Удалить</button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="add-phone">
+                                + Добавить еще один телефон
+                            </button>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-primary" type="submit">Сохранить изменения</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('phone-collection');
+            const addButton = document.getElementById('add-phone');
+
+            const initPhoneMask = (selector) => {
+                Inputmask("+7 (999) 999-99-99").mask(selector);
+            };
+
+            // Инициализация масок для существующих полей
+            initPhoneMask(document.querySelectorAll('.phone-mask'));
+
+            // Логика добавления телефона
+            addButton.addEventListener('click', function() {
+                const prototype = container.dataset.prototype;
+                const index = parseInt(container.dataset.index);
+                const newForm = prototype.replace(/__name__/g, index);
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'phone-item';
+                wrapper.innerHTML = newForm + '<button type="button" class="btn btn-outline-danger btn-sm remove-phone">Удалить</button>';
+                
+                container.appendChild(wrapper);
+                initPhoneMask(wrapper.querySelector('.phone-mask'));
+                container.dataset.index = index + 1;
+            });
+
+            // Логика удаления телефона
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-phone')) {
+                    e.target.closest('.phone-item').remove();
+                }
+            });
+        });
+    </script>
+{% endblock %}

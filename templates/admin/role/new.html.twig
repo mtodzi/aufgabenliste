@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Новая роль{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <a href="{{ path('app_admin_role_index') }}" class="btn btn-link link-secondary p-0 mb-3 text-decoration-none">
+            <i class="bi bi-arrow-left"></i> Вернуться к списку
+        </a>
+        <h1 class="mb-4">Создание новой роли</h1>
+        {{ include('admin/role/_form.html.twig', {'button_label': 'Создать роль'}) }}
+    </div>
+{% endblock %}

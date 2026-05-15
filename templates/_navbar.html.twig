@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand navbar-light bg-white border-bottom shadow-sm">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if app.user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="me-2">{{ app.user.userIdentifier }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="navbarDropdown">
+                            <li class="dropdown-header">
+                                <div class="fw-bold text-dark">{{ app.user.fullName|default('Пользователь') }}</div>
+                                <div class="small text-muted">{{ app.user.organization ? app.user.organization.name : 'Личный аккаунт' }}</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% if is_granted('ROLE_SYSTEM_ADMIN') %} {# System admins should always see this, regardless of their own organization status #}
+                                <li><a class="dropdown-item fw-bold text-primary" href="{{ path('app_admin_organization_index') }}">Администрирование системы</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="#">Настройки профиля</a></li>
+                            <li><a class="dropdown-item text-danger" href="{{ path('app_logout') }}">Выйти</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

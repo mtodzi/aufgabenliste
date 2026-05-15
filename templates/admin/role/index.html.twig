@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Управление ролями{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Управление ролями</h1>
+        <a href="{{ path('app_admin_role_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Создать роль
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Техническое имя</th>
+                        <th>Тип</th>
+                        <th>Права доступа</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for role in roles %}
+                    <tr>
+                        <td><code>{{ role.name }}</code></td>
+                        <td>
+                            {% if role.organization %}
+                                <span class="badge bg-info text-dark">Организация: {{ role.organization.name }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Глобальная роль</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for permission in role.permissions %}
+                                <span class="badge bg-light text-dark border">{{ permission.description }}</span>
+                            {% else %}
+                                <small class="text-muted">Нет назначенных прав</small>
+                            {% endfor %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ path('app_admin_role_edit', {'id': role.id}) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="text-center py-4">Роли не созданы</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
