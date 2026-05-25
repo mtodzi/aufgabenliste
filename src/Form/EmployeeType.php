@@ -4,6 +4,9 @@ namespace App\Form;
 
 use App\Entity\User;
 use App\Form\PhoneType;
+use App\Entity\Department;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -25,14 +28,14 @@ class EmployeeType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => 'Email',
-                'attr' => ['placeholder' => 'example@mail.com'],
+                'attr' => ['placeholder' => 'example@mail.com', 'autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank(message: 'Пожалуйста, введите email'),
                 ],
             ])
             ->add('fullName', TextType::class, [
                 'label' => 'ФИО',
-                'attr' => ['placeholder' => 'Иванов Иван Иванович'],
+                'attr' => ['placeholder' => 'Иванов Иван Иванович', 'autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank(message: 'Пожалуйста, введите ФИО'),
                 ],
@@ -45,6 +48,27 @@ class EmployeeType extends AbstractType
                 'by_reference' => false, // Важно для OneToMany связей
                 'label' => 'Телефоны',
                 'required' => false,
+            ])
+            ->add('departments', EntityType::class, [
+                'class' => Department::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => false,
+                'label' => 'Подразделения',
+                'required' => false,
+                'by_reference' => false,
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    $qb = $er->createQueryBuilder('d');
+                    if (!empty($options['current_organization'])) {
+                        $qb->where('d.organization = :org')
+                           ->setParameter('org', $options['current_organization']);
+                    }
+                    return $qb->orderBy('d.name', 'ASC');
+                },
+                'attr' => [
+                    'class' => 'form-select select2',
+                    'data-placeholder' => 'Выберите подразделения...',
+                ],
             ])
         ;
 
@@ -102,6 +126,7 @@ class EmployeeType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'is_edit' => false,
+            'current_organization' => null,
         ]);
     }
 }

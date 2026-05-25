@@ -9,3 +9,16 @@
 import './styles/app.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 const bootstrap = require('bootstrap');
+
+import $ from 'jquery';
+// Делаем jQuery доступным глобально, так как многие старые плагины этого требуют
+global.$ = global.jQuery = $;
+
+import 'select2';
+import 'select2/dist/css/select2.min.css';
+
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%', // Адаптируем ширину под родительский контейнер (Bootstrap)
+    });
+});

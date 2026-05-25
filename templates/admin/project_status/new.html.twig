@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Создание статуса проекта{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Создать новый статус проекта</h1>
+
+    <div class="card card-body mt-3">
+        {{ include('admin/project_status/_form.html.twig') }}
+    </div>
+    <a href="{{ path('app_admin_project_status_index') }}" class="btn btn-link mt-3">Вернуться к списку</a>
+</div>
+{% endblock %}

@@ -30,11 +30,18 @@ class Organization
     #[ORM\OneToMany(mappedBy: 'organization', targetEntity: User::class)]
     private Collection $users;
 
+    /**
+     * @var Collection<int, Department>
+     */
+    #[ORM\OneToMany(mappedBy: 'organization', targetEntity: Department::class, orphanRemoval: true)]
+    private Collection $departments;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->isActive = true; // Default to active when created
         $this->users = new ArrayCollection();
+        $this->departments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -102,6 +109,36 @@ class Organization
             // set the owning side to null (unless already changed)
             if ($user->getOrganization() === $this) {
                 $user->setOrganization(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Department>
+     */
+    public function getDepartments(): Collection
+    {
+        return $this->departments;
+    }
+
+    public function addDepartment(Department $department): static
+    {
+        if (!$this->departments->contains($department)) {
+            $this->departments->add($department);
+            $department->setOrganization($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDepartment(Department $department): static
+    {
+        if ($this->departments->removeElement($department)) {
+            // set the owning side to null (unless already changed)
+            if ($department->getOrganization() === $this) {
+                $department->setOrganization(null);
             }
         }
 

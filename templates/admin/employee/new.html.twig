@@ -36,7 +36,7 @@
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    {{ form_start(form, {'attr': {'id': 'employee-form'}}) }}
+                    {{ form_start(form, {'attr': {'id': 'employee-form', 'autocomplete': 'off'}}) }}
                         {{ form_row(form.fullName) }}
                         {{ form_row(form.email) }}
 
@@ -55,6 +55,8 @@
                             <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="add-phone">
                                 + Добавить еще один телефон
                             </button>
+                        
+                        {% do form.phones.setRendered() %}
                         </div>
 
                         <hr>
@@ -85,6 +87,7 @@
             const addButton = document.getElementById('add-phone');
             const passwordWrapper = document.getElementById('password-fields-wrapper');
             const generateCheckbox = document.querySelector('input[id$="_generatePassword"]');
+            const formElement = document.getElementById('employee-form');
 
             // Функция инициализации маски
             const initPhoneMask = (selector) => {
@@ -100,6 +103,18 @@
             };
             generateCheckbox.addEventListener('change', togglePasswordFields);
             togglePasswordFields();
+            
+            // Принудительно сбрасываем кэш браузера при загрузке.
+            // Метод reset() вернет поля к значениям, которые сгенерировал Symfony.
+            formElement.reset();
+            togglePasswordFields();
+
+            window.addEventListener('pageshow', function(e) {
+                if (e.persisted) { // Если страница загружена из кэша (кнопка "Назад" - bfcache)
+                    formElement.reset();
+                    togglePasswordFields();
+                }
+            });
 
             // 2. Логика коллекции телефонов
             addButton.addEventListener('click', function() {

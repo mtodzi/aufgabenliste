@@ -1,0 +1,118 @@
+<div class="card shadow-sm">
+    <div class="card-body">
+        {{ form_start(form) }}
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.description) }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.plannedStartDate) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.plannedEndDate) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="card-title fs-6 mb-3">Статус</h5>
+                    {{ form_row(form.status, {label: false}) }}
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h5 class="mb-3">Участники проекта</h5>
+            
+            {# Переменная с HTML шаблоном для одного участника #}
+            {% set prototype_html %}
+                <div class="member-item row align-items-end mb-3 pb-3 border-bottom">
+                    <div class="col-md-5">
+                        {{ form_row(form.members.vars.prototype.user) }}
+                    </div>
+                    <div class="col-md-5">
+                        {{ form_row(form.members.vars.prototype.role) }}
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-danger remove-member mb-3 w-100">
+                            <i class="bi bi-trash"></i> Удалить
+                        </button>
+                    </div>
+                </div>
+            {% endset %}
+
+            <div class="members-collection mb-4"
+                 data-index="{{ form.members|length > 0 ? form.members|last.vars.name + 1 : 0 }}"
+                 data-prototype="{{ prototype_html|e('html_attr') }}">
+                
+                <div id="members-list">
+                    {% for member in form.members %}
+                        <div class="member-item row align-items-end mb-3 pb-3 border-bottom">
+                            <div class="col-md-5">
+                                {{ form_row(member.user) }}
+                            </div>
+                            <div class="col-md-5">
+                                {{ form_row(member.role) }}
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-danger remove-member mb-3 w-100">Удалить</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="button" class="btn btn-success btn-sm add-member mt-2">
+                    + Добавить участника
+                </button>
+            </div>
+
+            <button class="btn btn-primary">{{ button_label|default('Сохранить проект') }}</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const collectionHolder = document.querySelector('.members-collection');
+    const addMemberBtn = document.querySelector('.add-member');
+    const membersList = document.getElementById('members-list');
+
+    if (!collectionHolder || !addMemberBtn || !membersList) return;
+
+    // Добавление нового поля
+    addMemberBtn.addEventListener('click', function() {
+        const prototype = collectionHolder.dataset.prototype;
+        let index = parseInt(collectionHolder.dataset.index);
+        
+        // Заменяем '__name__' (стандартный плейсхолдер Symfony) на текущий индекс
+        let newFormHtml = prototype.replace(/__name__/g, index);
+        
+        // Увеличиваем индекс для следующего элемента
+        collectionHolder.dataset.index = index + 1;
+        
+        // Преобразуем строку в HTML элемент
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newFormHtml;
+        const newElement = tempDiv.firstElementChild;
+        
+        // Добавляем в конец списка
+        membersList.appendChild(newElement);
+        
+        // Если в проекте используется плагин Select2 для красивых выпадающих списков
+        if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
+            jQuery(newElement).find('.select2').select2({
+                width: '100%'
+            });
+        }
+    });
+
+    // Удаление поля (используем делегирование событий, чтобы работало и для новых добавленных элементов)
+    membersList.addEventListener('click', function(e) {
+        const removeBtn = e.target.closest('.remove-member');
+        if (removeBtn) {
+            removeBtn.closest('.member-item').remove();
+        }
+    });
+});
+</script>

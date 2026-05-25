@@ -1,0 +1,14 @@
+{{ form_start(form) }}
+    <div class="mb-3">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+    <div class="mb-4">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+    
+    <button class="btn btn-success px-4">{{ button_label|default('Сохранить роль') }}</button>
+{{ form_end(form) }}

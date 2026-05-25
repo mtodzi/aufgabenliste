@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Подразделения{% endblock %}
+
+{% block body %}
+    <h1>Подразделения организации</h1>
+
+    <a href="{{ path('app_admin_department_new') }}" class="btn btn-primary mb-3">Создать подразделение</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Сотрудники</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for department in departments %}
+            <tr>
+                <td>{{ department.id }}</td>
+                <td>{{ department.name }}</td>
+                <td>{{ department.description }}</td>
+                <td>
+                    {% if department.users|length > 0 %}
+                        <ul class="mb-0 ps-3">
+                        {% for user in department.users %}
+                            <li>{{ user.fullName ?? user.email }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-muted">Нет сотрудников</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('app_admin_department_edit', {'id': department.id}) }}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                    
+                    <form method="post" action="{{ path('app_admin_department_delete', {'id': department.id}) }}" onsubmit="return confirm('Вы уверены?');" style="display: inline-block;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ department.id) }}">
+                        <button class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Нет созданных подразделений</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

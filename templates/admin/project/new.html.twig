@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Новый проект{% endblock %}
+
+{% block body %}
+    <h1>Создание проекта</h1>
+
+    {{ include('admin/project/_form.html.twig') }}
+
+    <a href="{{ path('app_project_index') }}">Назад к списку</a>
+{% endblock %}

@@ -56,9 +56,11 @@
                             <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="add-phone">
                                 + Добавить еще один телефон
                             </button>
+
+                            {% do form.phones.setRendered() %}
                         </div>
 
-                        <div class="mt-4">
+                        <div>
                             <button class="btn btn-primary" type="submit">Сохранить изменения</button>
                         </div>
                     {{ form_end(form) }}

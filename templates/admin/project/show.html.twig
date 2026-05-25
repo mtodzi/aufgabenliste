@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Проект: {{ project.name }}{% endblock %}
+
+{% block body %}
+    <h1>Проект</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ project.id }}</td>
+            </tr>
+            <tr>
+                <th>Название</th>
+                <td>{{ project.name }}</td>
+            </tr>
+            <tr>
+                <th>Описание</th>
+                <td>{{ project.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_project_index') }}">Назад к списку</a>
+    <a href="{{ path('app_project_edit', {'id': project.id}) }}">Редактировать</a>
+    {{ include('admin/project/_delete_form.html.twig') }}
+{% endblock %}

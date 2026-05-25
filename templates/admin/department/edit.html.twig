@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактировать подразделение{% endblock %}
+
+{% block body %}
+    <h1>Редактировать подразделение</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-success mt-3">Обновить</button>
+        <a href="{{ path('app_admin_department_index') }}" class="btn btn-link mt-3">Отмена</a>
+    {{ form_end(form) }}
+{% endblock %}

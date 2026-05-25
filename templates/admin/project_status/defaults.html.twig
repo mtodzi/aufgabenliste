@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Статусы по умолчанию{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Выберите статусы по умолчанию</h1>
+    <p class="text-muted">Отметьте галочками статусы, которые вы хотите добавить в систему.</p>
+
+    <form method="post" action="{{ path('app_admin_project_status_defaults') }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('add_defaults') }}">
+        
+        <div class="card mb-4 mt-3">
+            <div class="card-body">
+                {% for key, status in default_statuses %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="statuses[]" value="{{ key }}" id="status_{{ key }}" checked>
+                        <label class="form-check-label d-flex align-items-center" for="status_{{ key }}">
+                            <span style="display:inline-block; width:16px; height:16px; border-radius:3px; background-color:{{ status.color }}; border:1px solid #ccc; margin-right:8px;"></span>
+                            <strong>{{ status.name }}</strong>
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Добавить выбранные</button>
+        <a href="{{ path('app_admin_project_status_index') }}" class="btn btn-link ms-2">Отмена</a>
+    </form>
+</div>
+{% endblock %}

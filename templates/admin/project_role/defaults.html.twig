@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Роли проекта по умолчанию{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <h1 class="h3 mb-4">Выберите роли по умолчанию</h1>
+
+    <div class="card shadow-sm col-lg-8">
+        <div class="card-body">
+            <form method="post" action="{{ path('app_admin_project_role_defaults') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('add_defaults') }}">
+                <p class="text-muted mb-4">Выберите роли, которые вы хотите добавить в вашу организацию для использования в проектах.</p>
+                
+                {% for key, role in default_roles %}
+                    <div class="form-check mb-3 pb-3 border-bottom">
+                        <input class="form-check-input" type="checkbox" name="roles[]" value="{{ key }}" id="role_{{ key }}" checked>
+                        <label class="form-check-label w-100" for="role_{{ key }}">
+                            <span class="d-block fw-bold">{{ role.name }}</span>
+                            <small class="text-muted">{{ role.description }}</small>
+                        </label>
+                    </div>
+                {% endfor %}
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary px-4">Добавить выбранные роли</button>
+                    <a href="{{ path('app_admin_project_role_index') }}" class="btn btn-link text-decoration-none">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

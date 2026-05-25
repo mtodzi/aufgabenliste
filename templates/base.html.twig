@@ -27,6 +27,15 @@
             <div class="flex-grow-1">
                 {% include '_navbar.html.twig' %}
                 <main class="p-4">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                                {{ message|raw }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
                     {% block body %}{% endblock %}
                 </main>
             </div>

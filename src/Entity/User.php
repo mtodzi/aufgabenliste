@@ -56,10 +56,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Phone::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $phones;
 
+    /**
+     * @var Collection<int, Department>
+     */
+    #[ORM\ManyToMany(targetEntity: Department::class, inversedBy: 'users')]
+    #[ORM\JoinTable(name: 'user_departments')]
+    private Collection $departments;
+
+    /**
+     * @var Collection<int, ProjectMember>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ProjectMember::class, cascade: ['persist', 'remove'])]
+    private Collection $projectMemberships;
+
     public function __construct()
     {
         $this->phones = new ArrayCollection();
         $this->userRoles = new ArrayCollection();
+        $this->departments = new ArrayCollection();
+        $this->projectMemberships = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -235,5 +250,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Department>
+     */
+    public function getDepartments(): Collection
+    {
+        return $this->departments;
+    }
+
+    public function addDepartment(Department $department): static
+    {
+        if (!$this->departments->contains($department)) {
+            $this->departments->add($department);
+        }
+
+        return $this;
+    }
+
+    public function removeDepartment(Department $department): static
+    {
+        $this->departments->removeElement($department);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProjectMember>
+     */
+    public function getProjectMemberships(): Collection
+    {
+        return $this->projectMemberships;
+    }
+
+    public function addProjectMembership(ProjectMember $projectMembership): static
+    {
+        if (!$this->projectMemberships->contains($projectMembership)) {
+            $this->projectMemberships->add($projectMembership);
+            $projectMembership->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectMembership(ProjectMember $projectMembership): static
+    {
+        if ($this->projectMemberships->removeElement($projectMembership)) {
+            // set the owning side to null (unless already changed)
+            if ($projectMembership->getUser() === $this) {
+                $projectMembership->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 
 }

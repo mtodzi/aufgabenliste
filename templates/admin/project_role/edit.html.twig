@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактирование роли{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Редактирование роли: {{ project_role.name }}</h1>
+        <a href="{{ path('app_admin_project_role_index') }}" class="btn btn-outline-secondary">Назад к списку</a>
+    </div>
+
+    <div class="card shadow-sm col-lg-8">
+        <div class="card-body">
+            {{ include('admin/project_role/_form.html.twig', {'button_label': 'Обновить роль'}) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

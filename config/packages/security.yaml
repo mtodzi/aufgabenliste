@@ -56,6 +56,14 @@ security:
         # Разрешаем ROLE_ADMIN (админы организаций) доступ к управлению сотрудниками
         - { path: ^/admin/employees, roles: ROLE_ORG_ADMIN }
 
+        # Разрешаем управление подразделениями
+        - { path: ^/admin/departments, roles: ROLE_ORG_ADMIN }
+
+        # Разрешаем управление проектами (CRUD) и их статусами
+        - { path: ^/admin/project, roles: ROLE_ORG_ADMIN }
+
+        - { path: ^/admin/project_roles, roles: ROLE_ORG_ADMIN }
+
         # 3. Доступ в админку только для системных администраторов
         - { path: ^/admin, roles: ROLE_SYSTEM_ADMIN }
 
